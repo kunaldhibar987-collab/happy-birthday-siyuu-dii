@@ -1,0 +1,336 @@
+/* ==========================================================================
+   RESET & VARIABLES
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    --bg-pink: #fdf2f8;
+    --bg-lavender: #f3e8ff;
+    --bg-cream: #fffbeb;
+    --text-dark: #4a4a4a;
+    --primary-pink: #ec4899;
+    --accent-purple: #8b5cf6;
+    --glass-bg: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --glass-shadow: 0 8px 32px rgba(236, 72, 153, 0.15);
+}
+
+::selection {
+    background: var(--primary-pink);
+    color: #fff;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, var(--bg-pink), var(--bg-lavender), var(--bg-cream));
+    background-size: 200% 200%;
+    color: var(--text-dark);
+    overflow: hidden; 
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ==========================================================================
+   BACKGROUNDS & CANVAS
+   ========================================================================== */
+.night-sky-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(to bottom, #160021 0%, #0a001a 60%, #000000 100%);
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 3s ease-in-out;
+    pointer-events: none;
+}
+.night-sky-bg.active {
+    opacity: 1;
+}
+
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   LAYOUT & SCREENS
+   ========================================================================== */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+}
+.screen.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+.hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    display: none !important;
+}
+
+/* ==========================================================================
+   UI COMPONENTS (GLASSMORPHISM)
+   ========================================================================== */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    box-shadow: var(--glass-shadow);
+    padding: 2rem;
+}
+
+.premium-btn {
+    background: linear-gradient(135deg, #fbcfe8, #e9d5ff);
+    border: 1px solid #fff;
+    color: var(--primary-pink);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 12px 32px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    outline: none;
+}
+.premium-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.3);
+    filter: brightness(1.05);
+}
+.premium-btn:active {
+    transform: scale(0.97);
+}
+.premium-btn.small-btn {
+    padding: 8px 20px;
+    font-size: 0.9rem;
+}
+.premium-btn.locked {
+    background: #e5e7eb;
+    color: #9ca3af;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY & UTILS
+   ========================================================================== */
+.hidden-text {
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+.hidden-text.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.text-center { text-align: center; }
+
+/* ==========================================================================
+   INTRO SCREEN
+   ========================================================================== */
+.intro-content { text-align: center; z-index: 20; }
+.intro-heart { font-size: 4rem; margin-bottom: 20px; opacity: 0; transition: opacity 2s ease; }
+.intro-content p { font-size: 1.2rem; margin-bottom: 15px; color: var(--text-dark); }
+.intro-content button { margin-top: 30px; }
+
+/* ==========================================================================
+   HUB SCREEN
+   ========================================================================== */
+#screen-hub { justify-content: flex-start; padding: 20px; overflow-y: auto; }
+.hub-header { text-align: center; margin-top: 40px; margin-bottom: 30px; width: 100%; max-width: 800px; }
+.hub-header h1 { font-family: 'Dancing Script', cursive; font-size: 2.8rem; color: var(--primary-pink); margin-bottom: 15px; }
+.progress-container { background: var(--glass-bg); padding: 15px; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--glass-border); }
+.progress-bar-bg { width: 100%; height: 12px; background: rgba(255, 255, 255, 0.5); border-radius: 10px; margin: 10px 0; overflow: hidden; }
+.progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #f472b6, #c084fc); border-radius: 10px; transition: width 0.8s ease-out; }
+.game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; width: 100%; max-width: 900px; padding-bottom: 50px; }
+.game-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px 10px; text-align: center; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.game-card:hover { transform: translateY(-3px) scale(1.02); box-shadow: var(--glass-shadow); }
+.game-icon { font-size: 2.5rem; margin-bottom: 10px; }
+.game-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 5px; }
+.game-status { font-size: 0.8rem; color: #6b7280; }
+.game-card.completed { background: rgba(236, 72, 153, 0.1); border-color: #fbcfe8; }
+.creators-note-small { font-size: 0.8rem; color: #9ca3af; margin-top: 20px; margin-bottom: 20px; text-align: center;}
+
+/* ==========================================================================
+   GAME PLAY SCREEN & MODULES
+   ========================================================================== */
+#screen-game { background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+.game-header { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 50;}
+.game-header h2 { font-size: 1.2rem; color: var(--primary-pink); }
+.game-area { width: 100%; max-width: 600px; height: 65vh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
+
+.game-ui-text { font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; text-align: center; z-index: 5;}
+.memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.memory-card { width: 60px; height: 80px; background: #fff; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 2rem; cursor: pointer; transition: transform 0.3s; border: 1px solid #fbcfe8; }
+.memory-card.hidden-card { background: #fbcfe8; color: transparent; }
+.gift-box { font-size: 4rem; cursor: pointer; transition: transform 0.2s; margin: 10px; }
+.gift-box:hover { transform: scale(1.1); }
+.maze-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; background: #fff; padding: 5px; border-radius: 8px; z-index: 5;}
+.maze-cell { width: 40px; height: 40px; background: #fdf2f8; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; }
+.maze-wall { background: #fbcfe8; }
+.cake-builder-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 20px; z-index: 5;}
+
+/* ==========================================================================
+   GAME 03 & 09: PREMIUM CAKE & CANDLES (Attached properly)
+   ========================================================================== */
+.premium-cake-container { position: relative; width: 220px; height: 250px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+.cake-tier-top { width: 130px; height: 60px; background: #fdf2f8; border-radius: 10px 10px 0 0; border: 2px solid #fbcfe8; border-bottom: none; position: relative; z-index: 2; transition: all 0.5s ease; }
+.cake-tier-bottom { width: 170px; height: 80px; background: #fce7f3; border-radius: 10px; border: 2px solid #fbcfe8; position: relative; z-index: 1; margin-top: -5px; transition: all 0.5s ease; }
+.cake-frosting { position: absolute; top: -5px; width: 100%; height: 20px; background: #fff; border-radius: 10px; transition: all 0.5s ease; }
+.cake-decoration { position: absolute; top: 30%; width: 100%; display: flex; justify-content: space-around; opacity: 0; transition: opacity 0.5s; font-size: 1rem;}
+.cake-sprinkles { position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 0.5s; background-image: radial-gradient(#ec4899 15%, transparent 16%), radial-gradient(#8b5cf6 15%, transparent 16%); background-size: 15px 15px; background-position: 0 0, 7.5px 7.5px; border-radius: inherit;}
+.cake-topper { position: absolute; top: -50px; left: 50%; transform: translateX(-50%) translateY(-20px); font-size: 2.5rem; opacity: 0; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 6;}
+
+/* CANDLES STRICTLY INSIDE TOP TIER */
+.candles-container { position: absolute; top: -35px; width: 100%; display: flex; justify-content: center; gap: 12px; z-index: 5; }
+.candle { width: 8px; height: 35px; background: linear-gradient(to right, #fff, #fbcfe8); border-radius: 4px; position: relative; cursor: pointer; }
+.flame { position: absolute; top: -16px; left: -2px; width: 12px; height: 16px; background: #fbbf24; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; animation: flicker 0.5s infinite alternate; transition: opacity 0.3s; box-shadow: 0 0 10px #fbbf24; }
+@keyframes flicker { 0% { transform: scale(1); opacity: 0.9; } 100% { transform: scale(1.1); opacity: 1; } }
+.flame.extinguished { opacity: 0; animation: none; box-shadow: none; }
+.smoke-spark { position: absolute; top: -20px; font-size: 0.8rem; pointer-events: none; animation: riseFade 1s ease-out forwards; opacity: 0; }
+@keyframes riseFade { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-30px) scale(2); opacity: 0; } }
+
+/* ==========================================================================
+   GAME 06: REAL 3D WHEEL
+   ========================================================================== */
+.wheel-wrapper { position: relative; width: 260px; height: 260px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px;}
+.wheel-pointer { position: absolute; top: -15px; z-index: 10; width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #ec4899; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2)); }
+.wheel-outer { width: 100%; height: 100%; border-radius: 50%; padding: 10px; background: linear-gradient(145deg, #fbcfe8, #d8b4e2); box-shadow: 0 10px 20px rgba(0,0,0,0.15), inset 0 5px 10px rgba(255,255,255,0.5); position: relative;}
+.wheel-inner { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #fff; overflow: hidden; position: relative; transition: transform 4s cubic-bezier(0.2, 0.9, 0.1, 1); box-shadow: inset 0 0 15px rgba(0,0,0,0.1);}
+.wheel-segments { width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(
+    #fdf2f8 0 60deg, #f3e8ff 60deg 120deg, 
+    #fce7f3 120deg 180deg, #e9d5ff 180deg 240deg, 
+    #fbcfe8 240deg 300deg, #d8b4e2 300deg 360deg
+); }
+.wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; background: #fff; border-radius: 50%; z-index: 5; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 4px solid #ec4899;}
+.wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0;}
+.w-label { position: absolute; top: 10px; left: 50%; transform-origin: 50% 110px; width: 40px; margin-left: -20px; text-align: center; font-size: 1.2rem; font-weight: bold; color: #4a4a4a;}
+.w-label:nth-child(1) { transform: rotate(30deg); }
+.w-label:nth-child(2) { transform: rotate(90deg); }
+.w-label:nth-child(3) { transform: rotate(150deg); }
+.w-label:nth-child(4) { transform: rotate(210deg); }
+.w-label:nth-child(5) { transform: rotate(270deg); }
+.w-label:nth-child(6) { transform: rotate(330deg); }
+
+/* ==========================================================================
+   GAME 07: FIREWORK ARTIST
+   ========================================================================== */
+.g7-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at bottom, #2d004d, #09001a); border-radius: 16px; overflow: hidden; cursor: crosshair;}
+#g7-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;}
+.g7-instructions { position: absolute; top: 10px; width: 100%; text-align: center; color: #fff; font-size: 1.1rem; z-index: 2; text-shadow: 0 2px 4px rgba(0,0,0,0.5); pointer-events: none;}
+
+/* ==========================================================================
+   GAME 10 & 11: RUSH & MEMORY
+   ========================================================================== */
+.flying-heart { position: absolute; font-size: 3rem; cursor: pointer; user-select: none; transition: transform 0.1s; filter: drop-shadow(0 4px 6px rgba(236,72,153,0.4));}
+.flying-heart:active { transform: scale(0.8); }
+.cinematic-pause { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.9); z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; animation: flashWhite 0.5s forwards; }
+@keyframes flashWhite { 0% { opacity: 0; } 50% { opacity: 1; background: #fff;} 100% { opacity: 1; background: rgba(253, 242, 248, 0.95);} }
+.cinematic-text-1 { font-family: 'Dancing Script', cursive; font-size: 3rem; color: #ec4899; opacity: 0; transform: scale(0.5); animation: popScale 0.8s 0.5s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center;}
+.cinematic-text-2 { font-size: 1.1rem; color: #4a4a4a; opacity: 0; margin-top: 15px; text-align: center; padding: 0 20px; animation: popScale 0.8s 1.2s forwards; }
+@keyframes popScale { to { opacity: 1; transform: scale(1); } }
+
+.balloon-obj { width: 50px; height: 60px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.2); position: relative; cursor: pointer; transition: transform 0.2s, filter 0.2s;}
+.balloon-obj::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid inherit; filter: brightness(0.8);}
+.balloon-obj:active { transform: scale(0.9); }
+.balloon-glow { filter: brightness(1.5) drop-shadow(0 0 15px rgba(255,255,255,0.8)); transform: scale(1.1);}
+.balloon-error { animation: shakeError 0.4s; filter: hue-rotate(90deg) drop-shadow(0 0 15px red); }
+@keyframes shakeError { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-10px);} 75%{transform:translateX(10px);} }
+
+/* ==========================================================================
+   OVERLAYS
+   ========================================================================== */
+.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 100; }
+
+/* ==========================================================================
+   LETTER SCREEN
+   ========================================================================== */
+.letter-container { max-width: 600px; width: 90%; text-align: center; }
+.envelope-icon { font-size: 3rem; margin-bottom: 20px; }
+.letter-text p { font-size: 1.1rem; margin-bottom: 12px; color: var(--text-dark); opacity: 0; transform: translateY(10px); transition: opacity 0.8s, transform 0.8s; }
+.letter-text p.visible { opacity: 1; transform: translateY(0); }
+.signature { font-family: 'Dancing Script', cursive; font-size: 1.5rem; color: var(--primary-pink); margin-top: 20px; }
+
+/* ==========================================================================
+   FINALE SCREEN (3D Text & Heartbeat)
+   ========================================================================== */
+#screen-finale { background: transparent; }
+.finale-text-container {
+    text-align: center; z-index: 20; color: #fff;
+    background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    padding: 2.5rem 1.5rem; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 15px 50px rgba(0,0,0,0.6); max-width: 90%; width: 500px;
+    opacity: 0; pointer-events: none; transition: opacity 2s ease;
+}
+.finale-text-container.visible { opacity: 1; pointer-events: auto; }
+
+.finale-heart-beating {
+    font-size: 5rem; margin-bottom: 10px;
+    filter: drop-shadow(0 0 20px rgba(236,72,153,0.8));
+    animation: heartPulse 1.2s infinite ease-in-out;
+}
+@keyframes heartPulse { 0% { transform: scale(1); } 15% { transform: scale(1.15); } 30% { transform: scale(1); } 45% { transform: scale(1.15); } 100% { transform: scale(1); } }
+
+/* Cinematic 3D Text */
+.title-3d {
+    font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 2.5rem; line-height: 1.2;
+    margin-bottom: 20px; display: flex; justify-content: center; flex-wrap: wrap; gap: 5px;
+}
+.letter-3d {
+    display: inline-block; color: #fff;
+    text-shadow: 
+        0 1px 0 #fbcfe8, 0 2px 0 #f9a8d4, 0 3px 0 #f472b6, 0 4px 0 #ec4899,
+        0 5px 0 #db2777, 0 6px 1px rgba(0,0,0,.1), 0 0 10px rgba(236,72,153,.5),
+        0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25),
+        0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
+    opacity: 0; transform: translateY(20px) scale(0.8) rotate(-10deg);
+    animation: letterReveal 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes letterReveal { to { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); } }
+
+.finale-msg { font-size: 1.1rem; margin-bottom: 15px; line-height: 1.6; text-shadow: 0 2px 4px rgba(0,0,0,0.5);}
+.finale-credit { font-size: 1rem; color: #e5e7eb; margin-top: 20px; font-style: italic; }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (min-width: 768px) {
+    .game-grid { grid-template-columns: repeat(4, 1fr); }
+    .hub-header h1 { font-size: 3.5rem; }
+    .game-area { max-width: 800px; }
+    .letter-text p { font-size: 1.2rem; }
+    .title-3d { font-size: 3.5rem; }
+    .finale-text-container { padding: 4rem; max-width: 700px; }
+}
